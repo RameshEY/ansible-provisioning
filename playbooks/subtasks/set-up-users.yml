@@ -1,0 +1,53 @@
+---
+
+  - name: Create sudo users
+    remote_user: root
+    user: name={{ item }} groups=sudo,www-data,adm password={{ sudo_user_password }} shell=/bin/bash
+    with_items: "{{ sudo_users }}"
+
+  - name: Add ssh access for sudo users
+    remote_user: root
+    authorized_key: user={{ item }} key=https://github.com/{{ item }}.keys validate_certs=no
+    with_items: "{{ sudo_users }}"
+
+  - name: Disallow root SSH access
+    remote_user: root
+    lineinfile: dest=/etc/ssh/sshd_config
+                regexp="^PermitRootLogin"
+                line="PermitRootLogin no"
+                state=present
+    notify: restart ssh
+
+  - name: Disable ssh password access for sudo users
+    blockinfile:
+      insertafter: EOF
+      marker: "# {mark} ANSIBLE MANAGED BLOCK FOR USER {{ item }}"
+      dest: /etc/ssh/sshd_config
+      block: |
+        Match User {{ item }}
+        PasswordAuthentication no
+
+    with_items: "{{ sudo_users }}"
+    notify: restart ssh
+
+  - name: Create hptn-deploy user
+    user: name="{{remote_deploy_username}}" group=www-data shell=/bin/bash
+
+  - name: Add savas users SSH credentials to the hptn-deploy user
+    authorized_key: user="{{remote_deploy_username}}" key=https://github.com/{{item}}.keys validate_certs=no
+    with_items: "{{ deploy_users }}"
+
+  - name: Disable ssh password access for deploy users
+    blockinfile:
+      insertafter: EOF
+      marker: "# {mark} ANSIBLE MANAGED BLOCK FOR USER {{ remote_deploy_username }}"
+      dest: /etc/ssh/sshd_config
+      block: |
+        Match User {{ remote_deploy_username }}
+        PasswordAuthentication no
+
+  - name: Carry over forward-agent SSH keys on sudo.
+    lineinfile:
+      line: 'Defaults    env_keep += "SSH_AUTH_SOCK"'
+      state: present
+      dest: /etc/sudoers

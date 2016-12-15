@@ -1,0 +1,23 @@
+---
+
+  - name: Update apt and packages
+    apt:
+      upgrade: dist
+      update_cache: yes
+
+  - name: Install base packages
+    apt: name={{ item }} state=present
+    with_items:
+      - aptitude
+      - language-pack-en-base
+      - software-properties-common
+      - unzip
+      - git
+      - make
+      - automake
+      - libtool-bin
+      - gettext
+      - pkg-config
+      - apt-file
+      - unixodbc
+      - unixodbc-dev

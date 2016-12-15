@@ -1,0 +1,28 @@
+---
+
+- name: Set drupal installation directory permissions and ownership.
+  file:
+    path: "{{ server.webroot }}"
+    recurse: yes
+    state: directory
+    mode: "u=rwX,g=rX,o="
+    owner: "{{ remote_deploy_username }}"
+    group: www-data
+
+- name: Set files directory permissions and ownership.
+  file:
+    path: "{{ server.webroot }}/www/web/sites/default/files"
+    recurse: yes
+    state: directory
+    mode: "u=rwX,g=rwX,o="
+    owner: "{{ remote_deploy_username }}"
+    group: www-data
+
+- name: Set config directory permissions and ownership.
+  file:
+    path: "{{ server.webroot }}/config"
+    recurse: yes
+    state: directory
+    mode: "u=rwX,g=rwX,o="
+    owner: "{{ remote_deploy_username }}"
+    group: www-data
