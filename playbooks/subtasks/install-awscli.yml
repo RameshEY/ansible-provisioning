@@ -1,7 +1,0 @@
----
-
-- name: Install awscli
-  pip: name=awscli
-
-- name: Install boto (python interface to AWS)
-  pip: name=boto

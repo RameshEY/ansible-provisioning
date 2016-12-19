@@ -1,0 +1,16 @@
+---
+
+  - name: Install ufw
+    apt: name=ufw state=present
+
+
+  - name: Allow ssh traffic
+    ufw: rule=allow port={{ ubuntu_common_ssh_port }} proto=tcp
+
+  - name: Deny all other traffic
+    ufw: state=enabled policy=deny
+
+  - name: Open other ports
+    ufw: rule=allow port={{ item }} proto=tcp
+    with_items: "{{ ports_to_open }}"
+    when: ports_to_open | length > 0

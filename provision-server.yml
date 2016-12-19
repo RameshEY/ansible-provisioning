@@ -1,0 +1,49 @@
+- hosts: servers-to-provision
+  remote_user: "{{ user }}"
+
+  connection: smart
+
+  vars_files:
+    - provision-server.vars.yml
+  vars:
+    security_autoupdate_mail_to: "{{ admin_email }}"
+    passworded_sudoers: "{{ sudo_users }}"
+    ubuntu_common_ssh_port: 22
+
+  become: true
+  become_method: sudo
+  gather_facts: no
+
+  pre_tasks:
+    # This initial step checks if we can ssh in as the default remote user -- meaning that the user set-up task
+    # has run previously. If not, this is an inital set-up and we need to ssh in as root. Without this step the
+    # script can't be re-run, since root SSH is disabled midway through the config process.
+    - name: Check if it is possible to login as the default remote user.
+      local_action: "command ssh -q -o BatchMode=yes -o ConnectTimeout=3 {{ user }}@{{ inventory_hostname }} echo 'Ok'"
+      register: remote_user_created
+      sudo: no
+      ignore_errors: true
+      changed_when: false
+
+    - name: Install python
+      raw: apt-get install python-minimal python-pip -y
+      remote_user: "{{ remote_user_created | success | ternary(user, 'root') }}"
+    - name: Gathering facts
+      remote_user: "{{ remote_user_created | success | ternary(user, 'root') }}"
+      setup:
+    - include: subtasks/set-up-users.yml
+      vars:
+        ssh_user: "{{ remote_user_created | success | ternary(user, 'root') }}"
+    - include: subtasks/install-base-packages.yml
+    - include: subtasks/install-logwatch.yml
+    - include: subtasks/install-ufw.yml
+    - include: subtasks/secure-shared-memory.yml
+    - include: subtasks/ubuntu-network-hardening.yml
+      when:
+        - ansible_os_family == "Debian"
+
+  roles:
+    - { role: mongrelion.docker, when: docker }
+    # Run this role absolute last as it has the potential to lock you out from server entirely if the `set-up-users.yml`
+    # task has not run properly.
+    - { role: geerlingguy.security }

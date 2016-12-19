@@ -1,0 +1,22 @@
+---
+# This is an encrypted version of the sudo user password to be set for all users in sudo_users
+# Generate via running `pip install passlib` and then `python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())"`
+# Then store the plaintext password in a hostsfile as the ansible_become_pass variable
+sudo_user_password: "hashed-password-goes-here"
+ports_to_open:
+  - 80
+  - 443
+
+# Users listed here will be created with this username and the public key pulled from the GH profile of the same name.
+sudo_users:
+  - user1
+  - user2
+
+# User to run commands on the host as. Must be one of the sudo_users
+user: user1
+
+# This email will receive logwatch and other reports.
+admin_email: email@site.com
+
+# Install docker?
+docker: true

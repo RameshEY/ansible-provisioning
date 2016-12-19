@@ -1,0 +1,2 @@
+[servers-to-provision]
+123.456.78.9 ansible_become_pass=plaintext-sudo-password-for-user ansible_become_user=root

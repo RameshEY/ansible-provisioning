@@ -1,0 +1,29 @@
+---
+
+  - name: Create sudo users
+    user: name={{ item }} groups=sudo password={{ sudo_user_password }} shell=/bin/bash
+    remote_user: "{{ ssh_user }}"
+    with_items: "{{ sudo_users }}"
+
+  - name: Create docker group
+    group: name=docker state=present
+    remote_user: "{{ ssh_user }}"
+    when: docker
+
+  - name: Add users to docker group
+    user: name={{ item }} groups=docker append=yes
+    with_items: " {{ sudo_users }}"
+    remote_user: "{{ ssh_user }}"
+    when: docker
+
+  - name: Add ssh access for sudo users
+    authorized_key: user={{ item }} key=https://github.com/{{ item }}.keys validate_certs=no
+    remote_user: "{{ ssh_user }}"
+    with_items: "{{ sudo_users }}"
+
+  - name: Carry over forward-agent SSH keys on sudo.
+    lineinfile:
+      line: 'Defaults    env_keep += "SSH_AUTH_SOCK"'
+      state: present
+      dest: /etc/sudoers
+    remote_user: "{{ ssh_user }}"

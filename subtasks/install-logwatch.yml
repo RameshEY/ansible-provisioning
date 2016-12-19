@@ -1,0 +1,24 @@
+---
+
+  - name: Install logwatch and postfix
+    apt: name={{ item }} state=present
+    with_items:
+      - postfix
+      - logwatch
+
+  - name: Set up Postfix to relay mail
+    debconf: name=postfix
+             question='{{ item.question }}'
+             value='{{ item.value }}'
+             vtype='{{ item.vtype }}'
+    with_items:
+      - { question: 'postfix/mailname', value: '{{ ansible_fqdn }}', vtype: 'string' }
+      - { question: 'postfix/main_mailer_type', value: 'Internet Site', vtype: 'string' }
+
+  - name: Email log summary daily
+    cron:
+      name: "Logwatch scanner"
+      job: "/usr/sbin/logwatch --output mail --mailto {{ admin_email }} --detail high"
+      hour: 0
+      minute: 0
+      user: root
