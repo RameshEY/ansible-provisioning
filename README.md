@@ -10,7 +10,7 @@ Install roles via `ansible-galaxy install -r requirements.yml` from this directo
 
 1. Copy `example.provision-server.vars.yml` to `provision-server.vars.yml` and fill in the relevant variables.
 2. Copy `hosts.example` to `hosts` and fill in the IP address(es) of the servers you want to run the script on, along with the `ansible_become_pass` plaintext value.
-3. Run `ansible-playbook provision-server.yml -i hosts`. You can also add a `-v` or `-vvv` flag to get more verbose output.
+3. Run `ansible-playbook provision-server.yml -i hosts`. You can also add a `-v` or `-vvv` flag to get more verbose output. Use `--ask-pass` on Linode boxes to get a prompt to provide the root password.
 
 ### More about the hosts file
 
