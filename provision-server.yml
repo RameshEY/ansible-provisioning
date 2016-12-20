@@ -7,7 +7,6 @@
     - provision-server.vars.yml
   vars:
     security_autoupdate_mail_to: "{{ admin_email }}"
-    passworded_sudoers: "{{ sudo_users }}"
     ubuntu_common_ssh_port: 22
 
   become: true

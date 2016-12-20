@@ -9,8 +9,8 @@ ports_to_open:
 
 # Users listed here will be created with this username and the public key pulled from the GH profile of the same name.
 sudo_users:
-  - user1
-  - user2
+  - { name: 'user1', key: 'ssh-public-key1' }
+  - { name: 'user2', key: 'ssh-public-key2' }
 
 # User to run commands on the host as. Must be one of the sudo_users
 user: user1
