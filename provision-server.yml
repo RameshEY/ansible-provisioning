@@ -42,7 +42,7 @@
         - ansible_os_family == "Debian"
 
   roles:
-    - { role: mongrelion.docker, when: docker }
+    - { role: angstwad.docker_ubuntu, when: docker }
     # Run this role absolute last as it has the potential to lock you out from server entirely if the `set-up-users.yml`
     # task has not run properly.
     - { role: geerlingguy.security }
