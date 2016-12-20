@@ -13,6 +13,7 @@
       - aptitude
       - language-pack-en-base
       - software-properties-common
+      - mosh
       - unzip
       - make
       - automake
