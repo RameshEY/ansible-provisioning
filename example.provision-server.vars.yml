@@ -20,3 +20,6 @@ admin_email: email@site.com
 
 # Install docker?
 docker: true
+
+# Run autoupdate?
+security_autoupdate_enabled: true
