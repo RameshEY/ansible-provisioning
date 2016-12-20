@@ -23,3 +23,9 @@
       proto: tcp
     with_items: "{{ ports_to_open }}"
     when: ports_to_open | length > 0
+
+  - name: Open Mosh UDP ports
+    ufw:
+      rule: allow
+      port: "60000:61000"
+      proto: udp
